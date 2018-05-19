@@ -6,6 +6,7 @@
 ***************************************************/
 #pragma once
 #include <stddef.h>
+#include <stdbool.h>
 
 // For debug
 #define STORAGE_SIZE        30
@@ -34,3 +35,33 @@ typedef struct _StrIndex
     The string pointer, or NULL if index is out of range
 */
 static wchar_t *_GetString(size_t nIndex, size_t *lpLength);
+
+/*
+ - Description
+    Lookup request free size in storage
+ - Input
+    nMinSize: Minmum request size
+    AllowDefrag: Whether allow database to defrag storage when necessary
+ - Output
+    lpIndex: Space index in table
+ - Return
+    The free space pointer, or NULL
+*/
+static wchar_t *LookupFreeSpace(size_t nMinSize, bool AllowDefrag, size_t *lpIndex);
+
+/*
+ - Description
+    Insert a new string index to table
+ - Input
+    nLocation: Location to insert
+    lpString: Releated string
+*/
+static void InsertStringIndex(size_t nLocation, wchar_t *lpString);
+
+/*
+ - Description
+    Delete a string index from table
+ - Input
+    nLocation: Location to Delete
+*/
+static void DeleteStringIndex(size_t nLocation);
