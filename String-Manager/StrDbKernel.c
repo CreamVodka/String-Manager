@@ -17,22 +17,22 @@ static wchar_t      g_szStorage[STORAGE_SIZE] = { L'\0' };
 static size_t       g_nUsedSize = 0;
 
 // String index table, to locate all strings in storage
-static StrIndex     g_StrIdxTab[MAX_STRING_COUNT] = { 0 };
-static size_t       g_nStrCount = 0;
+static Index        g_IdxTab[MAX_STRING_COUNT] = { 0 };
+static size_t       g_nCount = 0;
 
 /*
     Get string by index
 */
-wchar_t *_GetString(size_t nIndex, size_t *lpLength)
+wchar_t *_GetItem(size_t nIndex, size_t *lpLength)
 {
-    if (nIndex < g_nStrCount)
+    if (nIndex < g_nCount)
     {
         if (lpLength != NULL)
         {
-            *lpLength = g_StrIdxTab[nIndex].nLength;
+            *lpLength = g_IdxTab[nIndex].nLength;
         }
 
-        return g_StrIdxTab[nIndex].lpData;
+        return g_IdxTab[nIndex].lpData;
     }
     else
     {
@@ -40,9 +40,9 @@ wchar_t *_GetString(size_t nIndex, size_t *lpLength)
     }
 }
 
-const wchar_t *GetString(size_t nIndex, size_t *lpLength)
+const wchar_t *GetItem(size_t nIndex, size_t *lpLength)
 {
-    return _GetString(nIndex, lpLength);
+    return _GetItem(nIndex, lpLength);
 }
 
 /*
@@ -60,8 +60,8 @@ wchar_t *LookupFreeSpace(size_t nMinSize, bool AllowDefrag, size_t *lpIndex)
 
     // The beginning space of storage is free
     if ((g_nUsedSize == 0) || 
-        (g_StrIdxTab[0].lpData != g_szStorage &&
-            g_StrIdxTab[0].lpData - g_szStorage >= nMinSize))
+        (g_IdxTab[0].lpData != g_szStorage &&
+            g_IdxTab[0].lpData - g_szStorage >= nMinSize))
     {
         *lpIndex = 0;
         return g_szStorage;
@@ -69,10 +69,10 @@ wchar_t *LookupFreeSpace(size_t nMinSize, bool AllowDefrag, size_t *lpIndex)
     else
     {
         // Check string gap space
-        for (size_t i = 0; i != g_nStrCount - 1; ++i)
+        for (size_t i = 0; i != g_nCount - 1; ++i)
         {
-            wchar_t *lpPreEnd = g_StrIdxTab[i].lpData + g_StrIdxTab[i].nLength;
-            if (g_StrIdxTab[i + 1].lpData - lpPreEnd >= nMinSize)
+            wchar_t *lpPreEnd = g_IdxTab[i].lpData + g_IdxTab[i].nLength;
+            if (g_IdxTab[i + 1].lpData - lpPreEnd >= nMinSize)
             {
                 *lpIndex = i + 1;
                 return lpPreEnd;
@@ -80,12 +80,12 @@ wchar_t *LookupFreeSpace(size_t nMinSize, bool AllowDefrag, size_t *lpIndex)
         }
 
         // Check last free space
-        wchar_t *lpLastStrEnd = g_StrIdxTab[g_nStrCount - 1].lpData + g_StrIdxTab[g_nStrCount - 1].nLength;
+        wchar_t *lpLastEnd = g_IdxTab[g_nCount - 1].lpData + g_IdxTab[g_nCount - 1].nLength;
         wchar_t *lpStorageEnd = &g_szStorage[STORAGE_SIZE];
-        if (lpStorageEnd - lpLastStrEnd >= nMinSize)
+        if (lpStorageEnd - lpLastEnd >= nMinSize)
         {
-            *lpIndex = g_nStrCount;
-            return lpLastStrEnd;
+            *lpIndex = g_nCount;
+            return lpLastEnd;
         }
 
         // Too many fragments, no enough continuous space
@@ -105,7 +105,7 @@ wchar_t *LookupFreeSpace(size_t nMinSize, bool AllowDefrag, size_t *lpIndex)
 /*
     Store string to database
 */
-bool StoreString(const wchar_t *lpString, size_t *lpIndex)
+bool Store(const wchar_t *lpString, size_t *lpIndex)
 {
     assert(lpString != NULL);
 
@@ -115,10 +115,10 @@ bool StoreString(const wchar_t *lpString, size_t *lpIndex)
     if (lpBuffer != NULL)
     {
         wcscpy(lpBuffer, lpString);
-        InsertStringIndex(nIndex, lpBuffer);
+        InsertIndex(nIndex, lpBuffer);
 
         g_nUsedSize += nLength;
-        ++g_nStrCount;
+        ++g_nCount;
         return true;
     }
     else
@@ -130,30 +130,30 @@ bool StoreString(const wchar_t *lpString, size_t *lpIndex)
 /*
     Insert a new string index to table
 */
-void InsertStringIndex(size_t nLocation, wchar_t *lpString)
+void InsertIndex(size_t nLocation, wchar_t *lpString)
 {
-    assert(nLocation <= g_nStrCount);
+    assert(nLocation <= g_nCount);
     assert(lpString != NULL);
 
-    size_t nRest = g_nStrCount - nLocation;
-    memmove(&g_StrIdxTab[nLocation + 1], &g_StrIdxTab[nLocation], sizeof(StrIndex) * nRest);
+    size_t nRest = g_nCount - nLocation;
+    memmove(&g_IdxTab[nLocation + 1], &g_IdxTab[nLocation], sizeof(Index) * nRest);
     
-    g_StrIdxTab[nLocation].lpData = lpString;
-    g_StrIdxTab[nLocation].nLength = wcslen(lpString) + 1;
+    g_IdxTab[nLocation].lpData = lpString;
+    g_IdxTab[nLocation].nLength = wcslen(lpString) + 1;
 }
 
 /*
     Delete a string index from table
 */
-void DeleteStringIndex(size_t nLocation)
+void DeleteIndex(size_t nLocation)
 {
-    assert(nLocation < g_nStrCount);
+    assert(nLocation < g_nCount);
 
-    size_t nRest = g_nStrCount - nLocation - 1;
-    memmove(&g_StrIdxTab[nLocation], &g_StrIdxTab[nLocation + 1], sizeof(StrIndex) * nRest);
+    size_t nRest = g_nCount - nLocation - 1;
+    memmove(&g_IdxTab[nLocation], &g_IdxTab[nLocation + 1], sizeof(Index) * nRest);
     
     // Set invalid index to NULL
-    memset(&g_StrIdxTab[g_nStrCount - 1], 0, sizeof(StrIndex));
+    memset(&g_IdxTab[g_nCount - 1], 0, sizeof(Index));
 }
 
 /*
@@ -162,9 +162,9 @@ void DeleteStringIndex(size_t nLocation)
 void ClearDatabase()
 {
     memset(g_szStorage, '\0', sizeof(g_szStorage));
-    memset(g_StrIdxTab, 0, sizeof(g_StrIdxTab));
+    memset(g_IdxTab, 0, sizeof(g_IdxTab));
     g_nUsedSize = 0;
-    g_nStrCount = 0;
+    g_nCount = 0;
 }
 
 /*
@@ -173,9 +173,9 @@ void ClearDatabase()
 size_t DefragDatabase()
 {
     wchar_t *lpDest = g_szStorage;
-    for (size_t i = 0; i != g_nStrCount; ++i)
+    for (size_t i = 0; i != g_nCount; ++i)
     {
-        StrIndex *lpIndex = &g_StrIdxTab[i];
+        Index *lpIndex = &g_IdxTab[i];
         memmove(lpDest, lpIndex->lpData, lpIndex->nLength);
         lpIndex->lpData = lpDest;
         lpDest += lpIndex->nLength;     // Store one next to one
@@ -211,7 +211,7 @@ size_t GetFreeSize()
 /*
     Get string count in database
 */
-size_t GetStringCount()
+size_t GetItemCount()
 {
-    return g_nStrCount;
+    return g_nCount;
 }

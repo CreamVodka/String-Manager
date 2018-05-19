@@ -39,7 +39,7 @@ size_t GetFreeSize();
 /*
     Get string count in database
 */
-size_t GetStringCount();
+size_t GetItemCount();
 
 /*
  - Description
@@ -51,7 +51,7 @@ size_t GetStringCount();
  - Return
     The string pointer, or NULL if index is out of range
 */
-const wchar_t *GetString(size_t nIndex, size_t *lpLength);
+const wchar_t *GetItem(size_t nIndex, size_t *lpLength);
 
 /*
  - Description
@@ -63,4 +63,4 @@ const wchar_t *GetString(size_t nIndex, size_t *lpLength);
  - Return
     true if successful, or false
 */
-bool StoreString(const wchar_t *lpString, size_t *lpIndex);
+bool Store(const wchar_t *lpString, size_t *lpIndex);

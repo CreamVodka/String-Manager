@@ -18,11 +18,11 @@
 /*
     Storage index to locate a string in database
 */
-typedef struct _StrIndex
+typedef struct _Index
 {
     wchar_t *lpData;    // String pointer
     size_t nLength;     // Number of characters in string, including '\0'
-} StrIndex;
+} Index;
 
 /*
  - Description
@@ -34,7 +34,7 @@ typedef struct _StrIndex
  - Return
     The string pointer, or NULL if index is out of range
 */
-static wchar_t *_GetString(size_t nIndex, size_t *lpLength);
+static wchar_t *_GetItem(size_t nIndex, size_t *lpLength);
 
 /*
  - Description
@@ -56,7 +56,7 @@ static wchar_t *LookupFreeSpace(size_t nMinSize, bool AllowDefrag, size_t *lpInd
     nLocation: Location to insert
     lpString: Releated string
 */
-static void InsertStringIndex(size_t nLocation, wchar_t *lpString);
+static void InsertIndex(size_t nLocation, wchar_t *lpString);
 
 /*
  - Description
@@ -64,4 +64,4 @@ static void InsertStringIndex(size_t nLocation, wchar_t *lpString);
  - Input
     nLocation: Location to Delete
 */
-static void DeleteStringIndex(size_t nLocation);
+static void DeleteIndex(size_t nLocation);
