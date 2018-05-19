@@ -6,11 +6,20 @@
 *******************************************************/
 #pragma once
 #include <stddef.h>
+#include <stdbool.h>
 
 /*
     Clear database
 */
 void ClearDatabase();
+
+/*
+ - Description
+    Defrag database, put all strings together and clear fragments
+ - Return
+    The free size of storage
+*/
+size_t DefragDatabase();
 
 /*
     Get the total size of storage
@@ -43,3 +52,15 @@ size_t GetStringCount();
     The string pointer, or NULL if index is out of range
 */
 const wchar_t *GetString(size_t nIndex, size_t *lpLength);
+
+/*
+ - Description
+    Store string to database
+ - Input
+    lpString: The string to store
+ - Output
+    lpIndex: String index in database, It can be NULL
+ - Return
+    true if successful, or false
+*/
+bool StoreString(const wchar_t *lpString, size_t *lpIndex);
