@@ -1,0 +1,8 @@
+debug/
+release/
+x64/
+ipch/
+.vs/
+*.db
+*.sdf
+*.opendb
