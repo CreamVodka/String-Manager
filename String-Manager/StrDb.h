@@ -123,3 +123,37 @@ const QueryRecord *QueryAllByContent(const wchar_t *lpString, size_t *lpMatchCou
     The all matched records
 */
 const QueryRecord *FuzzyQueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount);
+
+/*
+ - Description
+    Delete string by index
+ - Input
+    nIndex: The index of string
+ - Return
+    true if successful, or false
+*/
+bool DeleteByIndex(size_t nIndex);
+
+/*
+ - Description
+    Delete next matched string by content
+ - Input
+    lpString: The string to delete
+    nBeginIndex: The index of beginning to search
+ - Output
+    lpDeleteIndex: The deleted string index. It can be NULL
+ - Return
+    true if successful, or false
+*/
+bool DeleteNextByContent(const wchar_t *lpString, 
+    size_t nBeginIndex, size_t *lpDeleteIndex);
+
+/*
+ - Description
+    Delete all matched string by content
+ - Input
+    lpString: The string to delete
+ - Return
+    The deleted strings count
+*/
+size_t DeleteAllByContent(const wchar_t *lpString);
