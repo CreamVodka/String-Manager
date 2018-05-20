@@ -228,6 +228,65 @@ const QueryRecord *FuzzyQueryAllByContent(const wchar_t *lpString, size_t *lpMat
 }
 
 /*
+    Delete string by index
+*/
+bool DeleteByIndex(size_t nIndex)
+{
+    size_t nLength = 0;
+    wchar_t *lpString = _GetItem(nIndex, &nLength);
+    if (lpString != NULL)
+    {
+        DeleteIndex(nIndex);
+        --g_nCount;
+        g_nUsedSize -= nLength;
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/*
+    Delete next matched string by content
+*/
+bool DeleteNextByContent(const wchar_t *lpString, 
+    size_t nBeginIndex, size_t *lpDeleteIndex)
+{
+    size_t nDeleteIndex = 0;
+    if (QueryNextByContent(lpString, nBeginIndex, &nDeleteIndex) != NULL)
+    {
+        DeleteByIndex(nDeleteIndex);
+        if (lpDeleteIndex != NULL)
+        {
+            *lpDeleteIndex = nDeleteIndex;
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/*
+    Delete all matched string by content
+*/
+size_t DeleteAllByContent(const wchar_t *lpString)
+{
+    size_t nDeleteCount = 0, nDeleteIndex = 0;
+    bool bResult = DeleteNextByContent(lpString, nDeleteIndex, &nDeleteIndex);
+    while (bResult != false)
+    {
+        ++nDeleteCount;
+        bResult = DeleteNextByContent(lpString, nDeleteIndex, &nDeleteIndex);
+    }
+
+    return nDeleteCount;
+}
+
+/*
     Insert a new string index to table
 */
 void InsertIndex(size_t nLocation, wchar_t *lpString)
