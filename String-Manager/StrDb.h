@@ -9,6 +9,15 @@
 #include <stdbool.h>
 
 /*
+    Record string query result
+*/
+typedef struct _QueryRecord
+{
+    const wchar_t *lpData;  // String pointer
+    size_t nIndex;          // String Index in database
+} QueryRecord;
+
+/*
     Clear database
 */
 void ClearDatabase();
@@ -64,3 +73,53 @@ const wchar_t *GetItem(size_t nIndex, size_t *lpLength);
     true if successful, or false
 */
 bool Store(const wchar_t *lpString, size_t *lpIndex);
+
+/*
+ - Description
+    Query string by index
+ - Input
+    nIndex: The index of string
+ - Output
+    lpLength: Number of characters in string, including '\0'. It can be NULL
+ - Return
+    The string pointer, or NULL if index is out of range
+*/
+const wchar_t *QueryStringByIndex(size_t nIndex, size_t *lpLength);
+
+/*
+ - Description
+    Query next matched string by content
+ - Input
+    lpString: The string to query
+    nBeginIndex: The index of beginning to search
+ - Output
+    lpMatchIndex: The matched string index. It can be NULL
+ - Return
+    The next matched string pointer, or NULL
+*/
+const wchar_t *QueryNextStringByContent(
+    const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex);
+
+/*
+ - Description
+    Query all strings by content
+ - Input
+    lpString: The string to query
+ - Output
+    lpMatchCount: The matched strings count
+ - Return
+    The all matched records
+*/
+const QueryRecord *QueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount);
+
+/*
+ - Description
+    Fuzzy query all strings by content
+ - Input
+    lpString: The string to query
+ - Output
+    lpMatchCount: The matched strings count
+ - Return
+    The all matched records
+*/
+const QueryRecord *FuzzyQueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount);
