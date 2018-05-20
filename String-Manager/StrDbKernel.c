@@ -188,6 +188,9 @@ const wchar_t *QueryNextByContent(
 */
 const QueryRecord *QueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount)
 {
+    assert(lpString != NULL);
+    assert(lpMatchCount != NULL);
+
     ClearQueryRecords();
 
     size_t nMatchCount = 0, nMatchIndex = 0;
@@ -210,6 +213,9 @@ const QueryRecord *QueryAllByContent(const wchar_t *lpString, size_t *lpMatchCou
 */
 const QueryRecord *FuzzyQueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount)
 {
+    assert(lpString != NULL);
+    assert(lpMatchCount != NULL);
+
     ClearQueryRecords();
 
     size_t nMatchCount = 0;
@@ -253,6 +259,9 @@ bool DeleteByIndex(size_t nIndex)
 bool DeleteNextByContent(const wchar_t *lpString, 
     size_t nBeginIndex, size_t *lpDeleteIndex)
 {
+    assert(lpString != NULL);
+    assert(nBeginIndex <= g_nCount);
+
     size_t nDeleteIndex = 0;
     if (QueryNextByContent(lpString, nBeginIndex, &nDeleteIndex) != NULL)
     {
@@ -275,6 +284,8 @@ bool DeleteNextByContent(const wchar_t *lpString,
 */
 size_t DeleteAllByContent(const wchar_t *lpString)
 {
+    assert(lpString != NULL);
+
     size_t nDeleteCount = 0, nDeleteIndex = 0;
     bool bResult = DeleteNextByContent(lpString, nDeleteIndex, &nDeleteIndex);
     while (bResult != false)
