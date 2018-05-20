@@ -81,7 +81,7 @@ static void ClearQueryRecords();
  - Return
     The string pointer, or NULL if index is out of range
 */
-static wchar_t *_QueryStringByIndex(size_t nIndex, size_t *lpLength);
+static wchar_t *_QueryByIndex(size_t nIndex, size_t *lpLength);
 
 /*
  - Description
@@ -94,5 +94,5 @@ static wchar_t *_QueryStringByIndex(size_t nIndex, size_t *lpLength);
  - Return
     The next matched string pointer, or NULL
 */
-static wchar_t *_QueryNextStringByContent(
+static wchar_t *_QueryNextByContent(
     const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex);

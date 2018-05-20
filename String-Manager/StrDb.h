@@ -84,7 +84,7 @@ bool Store(const wchar_t *lpString, size_t *lpIndex);
  - Return
     The string pointer, or NULL if index is out of range
 */
-const wchar_t *QueryStringByIndex(size_t nIndex, size_t *lpLength);
+const wchar_t *QueryByIndex(size_t nIndex, size_t *lpLength);
 
 /*
  - Description
@@ -97,7 +97,7 @@ const wchar_t *QueryStringByIndex(size_t nIndex, size_t *lpLength);
  - Return
     The next matched string pointer, or NULL
 */
-const wchar_t *QueryNextStringByContent(
+const wchar_t *QueryNextByContent(
     const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex);
 
 /*
@@ -110,7 +110,7 @@ const wchar_t *QueryNextStringByContent(
  - Return
     The all matched records
 */
-const QueryRecord *QueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount);
+const QueryRecord *QueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount);
 
 /*
  - Description
@@ -122,4 +122,4 @@ const QueryRecord *QueryAllStringsByContent(const wchar_t *lpString, size_t *lpM
  - Return
     The all matched records
 */
-const QueryRecord *FuzzyQueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount);
+const QueryRecord *FuzzyQueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount);

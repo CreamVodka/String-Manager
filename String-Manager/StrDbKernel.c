@@ -140,20 +140,20 @@ void ClearQueryRecords()
 /*
     Query string by index
 */
-wchar_t *_QueryStringByIndex(size_t nIndex, size_t *lpLength)
+wchar_t *_QueryByIndex(size_t nIndex, size_t *lpLength)
 {
     return _GetItem(nIndex, lpLength);
 }
 
-const wchar_t *QueryStringByIndex(size_t nIndex, size_t *lpLength)
+const wchar_t *QueryByIndex(size_t nIndex, size_t *lpLength)
 {
-    return _QueryStringByIndex(nIndex, lpLength);
+    return _QueryByIndex(nIndex, lpLength);
 }
 
 /*
     Query next matched string by content
 */
-wchar_t *_QueryNextStringByContent(const wchar_t *lpString,
+wchar_t *_QueryNextByContent(const wchar_t *lpString,
     size_t nBeginIndex, size_t *lpMatchIndex)
 {
     assert(lpString != NULL);
@@ -177,28 +177,28 @@ wchar_t *_QueryNextStringByContent(const wchar_t *lpString,
     return NULL;
 }
 
-const wchar_t *QueryNextStringByContent(
+const wchar_t *QueryNextByContent(
     const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex)
 {
-    return _QueryNextStringByContent(lpString, nBeginIndex, lpMatchIndex);
+    return _QueryNextByContent(lpString, nBeginIndex, lpMatchIndex);
 }
 
 /*
     Query all strings by content
 */
-const QueryRecord *QueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount)
+const QueryRecord *QueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount)
 {
     ClearQueryRecords();
 
     size_t nMatchCount = 0, nMatchIndex = 0;
-    wchar_t *lpResult = _QueryNextStringByContent(lpString, nMatchIndex, &nMatchIndex);
+    wchar_t *lpResult = _QueryNextByContent(lpString, nMatchIndex, &nMatchIndex);
     while (lpResult != NULL)
     {
         g_QueryRecords[nMatchCount].lpData = lpResult;
         g_QueryRecords[nMatchCount].nIndex = nMatchIndex;
         ++nMatchCount;
 
-        lpResult = _QueryNextStringByContent(lpString, nMatchIndex + 1, &nMatchIndex);
+        lpResult = _QueryNextByContent(lpString, nMatchIndex + 1, &nMatchIndex);
     }
 
     *lpMatchCount = nMatchCount;
@@ -208,7 +208,7 @@ const QueryRecord *QueryAllStringsByContent(const wchar_t *lpString, size_t *lpM
 /*
     Fuzzy query all strings by content
 */
-const QueryRecord *FuzzyQueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount)
+const QueryRecord *FuzzyQueryAllByContent(const wchar_t *lpString, size_t *lpMatchCount)
 {
     ClearQueryRecords();
 
