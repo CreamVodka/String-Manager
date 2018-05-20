@@ -119,6 +119,11 @@ bool Store(const wchar_t *lpString, size_t *lpIndex)
     {
         wcscpy(lpBuffer, lpString);
         InsertIndex(nIndex, lpBuffer);
+        if (lpIndex != NULL)
+        {
+            *lpIndex = nIndex;
+        }
+
         g_nUsedSize += nLength;
         ++g_nCount;
         return true;
