@@ -20,6 +20,9 @@ static size_t       g_nUsedSize = 0;
 static Index        g_IdxTab[MAX_STRING_COUNT] = { 0 };
 static size_t       g_nCount = 0;
 
+// Record string query results
+static QueryRecord  g_QueryRecords[MAX_STRING_COUNT] = { 0 };
+
 /*
     Get string by index
 */
@@ -116,7 +119,6 @@ bool Store(const wchar_t *lpString, size_t *lpIndex)
     {
         wcscpy(lpBuffer, lpString);
         InsertIndex(nIndex, lpBuffer);
-
         g_nUsedSize += nLength;
         ++g_nCount;
         return true;
@@ -125,6 +127,104 @@ bool Store(const wchar_t *lpString, size_t *lpIndex)
     {
         return false;
     }
+}
+
+/*
+    Clear query records
+*/
+void ClearQueryRecords()
+{
+    memset(g_QueryRecords, 0, sizeof(g_QueryRecords));
+}
+
+/*
+    Query string by index
+*/
+wchar_t *_QueryStringByIndex(size_t nIndex, size_t *lpLength)
+{
+    return _GetItem(nIndex, lpLength);
+}
+
+const wchar_t *QueryStringByIndex(size_t nIndex, size_t *lpLength)
+{
+    return _QueryStringByIndex(nIndex, lpLength);
+}
+
+/*
+    Query next matched string by content
+*/
+wchar_t *_QueryNextStringByContent(const wchar_t *lpString,
+    size_t nBeginIndex, size_t *lpMatchIndex)
+{
+    assert(lpString != NULL);
+    assert(nBeginIndex <= g_nCount);
+
+    size_t nLength = wcslen(lpString) + 1;
+    for (size_t i = nBeginIndex; i < g_nCount; ++i)
+    {
+        if (g_IdxTab[i].nLength == nLength
+            && wcscmp(lpString, g_IdxTab[i].lpData) == 0)
+        {
+            if (lpMatchIndex != NULL)
+            {
+                *lpMatchIndex = i;
+            }
+
+            return g_IdxTab[i].lpData;
+        }
+    }
+
+    return NULL;
+}
+
+const wchar_t *QueryNextStringByContent(
+    const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex)
+{
+    return _QueryNextStringByContent(lpString, nBeginIndex, lpMatchIndex);
+}
+
+/*
+    Query all strings by content
+*/
+const QueryRecord *QueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount)
+{
+    ClearQueryRecords();
+
+    size_t nMatchCount = 0, nMatchIndex = 0;
+    wchar_t *lpResult = _QueryNextStringByContent(lpString, nMatchIndex, &nMatchIndex);
+    while (lpResult != NULL)
+    {
+        g_QueryRecords[nMatchCount].lpData = lpResult;
+        g_QueryRecords[nMatchCount].nIndex = nMatchIndex;
+        ++nMatchCount;
+
+        lpResult = _QueryNextStringByContent(lpString, nMatchIndex + 1, &nMatchIndex);
+    }
+
+    *lpMatchCount = nMatchCount;
+    return g_QueryRecords;
+}
+
+/*
+    Fuzzy query all strings by content
+*/
+const QueryRecord *FuzzyQueryAllStringsByContent(const wchar_t *lpString, size_t *lpMatchCount)
+{
+    ClearQueryRecords();
+
+    size_t nMatchCount = 0;
+    for (size_t i = 0; i != g_nCount; ++i)
+    {
+        if (wcsstr(g_IdxTab[i].lpData, lpString) != NULL)
+        {
+            g_QueryRecords[nMatchCount].lpData = g_IdxTab[i].lpData;
+            g_QueryRecords[nMatchCount].nIndex = i;
+            ++nMatchCount;
+        }
+    }
+
+    *lpMatchCount = nMatchCount;
+    return g_QueryRecords;
 }
 
 /*

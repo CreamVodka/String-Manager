@@ -9,7 +9,7 @@
 #include <stdbool.h>
 
 // For debug
-#define STORAGE_SIZE        30
+#define STORAGE_SIZE        50
 // #define STORAGE_SIZE        1000
 
 // The number of characters in shortest string is 2, including '\0'
@@ -65,3 +65,34 @@ static void InsertIndex(size_t nLocation, wchar_t *lpString);
     nLocation: Location to Delete
 */
 static void DeleteIndex(size_t nLocation);
+
+/*
+    Clear query records
+*/
+static void ClearQueryRecords();
+
+/*
+ - Description
+    Query string by index
+ - Input
+    nIndex: The index of string
+ - Output
+    lpLength: Number of characters in string, including '\0'. It can be NULL
+ - Return
+    The string pointer, or NULL if index is out of range
+*/
+static wchar_t *_QueryStringByIndex(size_t nIndex, size_t *lpLength);
+
+/*
+ - Description
+    Query next matched string by content
+ - Input
+    lpString: The string to query
+    nBeginIndex: The index of beginning to search
+ - Output
+    lpMatchIndex: The matched string index. It can be NULL
+ - Return
+    The next matched string pointer, or NULL
+*/
+static wchar_t *_QueryNextStringByContent(
+    const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex);
