@@ -117,6 +117,7 @@ bool Store(const wchar_t *lpString, size_t *lpIndex)
     wchar_t *lpBuffer = LookupFreeSpace(nLength, true, &nIndex);
     if (lpBuffer != NULL)
     {
+        memset(lpBuffer, '\0', nLength * sizeof(wchar_t));
         wcscpy(lpBuffer, lpString);
         InsertIndex(nIndex, lpBuffer);
         if (lpIndex != NULL)
@@ -351,7 +352,7 @@ size_t DefragDatabase()
     for (size_t i = 0; i != g_nCount; ++i)
     {
         Index *lpIndex = &g_IdxTab[i];
-        memmove(lpDest, lpIndex->lpData, lpIndex->nLength);
+        memmove(lpDest, lpIndex->lpData, lpIndex->nLength * sizeof(wchar_t));
         lpIndex->lpData = lpDest;
         lpDest += lpIndex->nLength;     // Store one next to one
     }
