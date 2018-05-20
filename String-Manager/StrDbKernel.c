@@ -304,6 +304,93 @@ size_t DeleteAllByContent(const wchar_t *lpString)
 }
 
 /*
+    Alter string by index
+*/
+bool AlterByIndex(size_t nIndex, const wchar_t *lpNewString, size_t *lpNewIndex)
+{
+    assert(lpNewString != NULL);
+
+    size_t nSrcLength = 0;
+    wchar_t *lpSrcString = _GetItem(nIndex, &nSrcLength);
+    if (lpSrcString != NULL)
+    {
+        size_t nNewLength = wcslen(lpNewString) + 1;
+        if (nNewLength <= nSrcLength)
+        {
+            // Alter on the same place
+            memset(lpSrcString, '\0', nNewLength * sizeof(wchar_t));
+            wcscpy(lpSrcString, lpNewString);
+            g_IdxTab[nIndex].nLength = nNewLength;
+            g_nUsedSize -= (nSrcLength - nNewLength);
+            if (lpNewIndex != NULL)
+            {
+                *lpNewIndex = nIndex;
+            }
+
+            return true;
+        }
+        else if (nNewLength - nSrcLength <= GetFreeSize())
+        {
+            // Delete source and find a new place to store
+            DeleteByIndex(nIndex);
+            return Store(lpNewString, lpNewIndex);
+        }
+    }
+
+    return false;
+}
+
+/*
+    Alter next matched string by content
+*/
+bool AlterNextByContent(const wchar_t *lpSrcString, size_t nBeginIndex,
+    const wchar_t *lpNewString, size_t *lpSrcIndex, size_t *lpNewIndex)
+{
+    assert(lpSrcString != NULL);
+    assert(lpNewString != NULL);
+    assert(nBeginIndex <= g_nCount);
+
+    size_t nSrcIndex = 0;
+    if (QueryNextByContent(lpSrcString, nBeginIndex, &nSrcIndex) != NULL)
+    {
+        if (lpSrcIndex != NULL)
+        {
+            *lpSrcIndex = nSrcIndex;
+        }
+
+        return AlterByIndex(nSrcIndex, lpNewString, lpNewIndex);;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+/*
+    Alter all matched string by content
+*/
+size_t AlterAllByContent(const wchar_t *lpSrcString, const wchar_t *lpNewString)
+{
+    assert(lpSrcString != NULL);
+    assert(lpNewString != NULL);
+
+    size_t nAlterCount = 0, nAlterIndex = 0;
+    if (wcscmp(lpSrcString, lpNewString) != 0)
+    {
+        bool bResult = AlterNextByContent(lpSrcString,
+            nAlterIndex, lpNewString, &nAlterIndex, NULL);
+        while (bResult != false)
+        {
+            ++nAlterCount;
+            bResult = AlterNextByContent(lpSrcString,
+                nAlterIndex, lpNewString, &nAlterIndex, NULL);
+        }
+    }
+
+    return nAlterCount;
+}
+
+/*
     Insert a new string index to table
 */
 void InsertIndex(size_t nLocation, wchar_t *lpString)

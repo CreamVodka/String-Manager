@@ -157,3 +157,43 @@ bool DeleteNextByContent(const wchar_t *lpString,
     The deleted strings count
 */
 size_t DeleteAllByContent(const wchar_t *lpString);
+
+/*
+ - Description
+    Alter string by index
+ - Input
+    nIndex: The index of source string
+    lpNewString: The new string
+ - Output
+    lpNewIndex: The new string index. It can be NULL
+ - Return
+    true if successful, or false
+*/
+bool AlterByIndex(size_t nIndex, const wchar_t *lpNewString, size_t *lpNewIndex);
+
+/*
+ - Description
+    Alter next matched string by content
+ - Input
+    lpSrcString: The source string
+    nBeginIndex: The index of beginning to search
+    lpNewString: The new string
+ - Output
+    lpSrcIndex: The altered string index. It can be NULL
+    lpNewIndex: The new string index. It can be NULL
+ - Return
+    true if successful, or false
+*/
+bool AlterNextByContent(const wchar_t *lpSrcString, size_t nBeginIndex, 
+    const wchar_t *lpNewString, size_t *lpSrcIndex, size_t *lpNewIndex);
+
+/*
+ - Description
+    Alter all matched string by content
+ - Input
+    lpSrcString: The source string
+    lpNewString: The new string
+ - Return
+    The altered strings count
+*/
+size_t AlterAllByContent(const wchar_t *lpSrcString, const wchar_t *lpNewString);
