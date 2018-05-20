@@ -248,6 +248,7 @@ bool DeleteByIndex(size_t nIndex)
     wchar_t *lpString = _GetItem(nIndex, &nLength);
     if (lpString != NULL)
     {
+        memset(lpString, '\0', nLength * sizeof(wchar_t));
         DeleteIndex(nIndex);
         --g_nCount;
         g_nUsedSize -= nLength;
@@ -318,7 +319,7 @@ bool AlterByIndex(size_t nIndex, const wchar_t *lpNewString, size_t *lpNewIndex)
         if (nNewLength <= nSrcLength)
         {
             // Alter on the same place
-            memset(lpSrcString, '\0', nNewLength * sizeof(wchar_t));
+            memset(lpSrcString, '\0', nSrcLength * sizeof(wchar_t));
             wcscpy(lpSrcString, lpNewString);
             g_IdxTab[nIndex].nLength = nNewLength;
             g_nUsedSize -= (nSrcLength - nNewLength);
@@ -439,7 +440,7 @@ size_t DefragDatabase()
     for (size_t i = 0; i != g_nCount; ++i)
     {
         Index *lpIndex = &g_IdxTab[i];
-        memmove(lpDest, lpIndex->lpData, lpIndex->nLength * sizeof(wchar_t));
+        MoveString(lpDest, lpIndex->lpData);
         lpIndex->lpData = lpDest;
         lpDest += lpIndex->nLength;     // Store one next to one
     }
@@ -477,4 +478,35 @@ size_t GetFreeSize()
 size_t GetItemCount()
 {
     return g_nCount;
+}
+
+/*
+    Move string from source to dest, and set invalid data to '\0'
+*/
+void MoveString(wchar_t *lpDest, wchar_t *lpSrc)
+{
+    assert(lpDest != NULL);
+    assert(lpDest != NULL);
+
+    size_t nLength = wcslen(lpSrc) + 1;
+    if (lpSrc < lpDest && lpDest < lpSrc + nLength)
+    {
+        wchar_t *lpSrcData = lpSrc + nLength - 1;
+        wchar_t *lpDestData = lpDest + nLength - 1;
+        for (size_t i = 0; i != nLength; ++i, --lpSrcData, --lpDestData)
+        {
+            *lpDestData = *lpSrcData;
+            *lpSrcData = '\0';
+        }
+    }
+    else
+    {
+        wchar_t *lpSrcData = lpSrc;
+        wchar_t *lpDestData = lpDest;
+        for (size_t i = 0; i != nLength; ++i, ++lpSrcData, ++lpDestData)
+        {
+            *lpDestData = *lpSrcData;
+            *lpSrcData = '\0';
+        }
+    }
 }

@@ -96,3 +96,12 @@ static wchar_t *_QueryByIndex(size_t nIndex, size_t *lpLength);
 */
 static wchar_t *_QueryNextByContent(
     const wchar_t *lpString, size_t nBeginIndex, size_t *lpMatchIndex);
+
+/*
+ - Description
+    Move string from source to dest, and set invalid data to '\0'
+ - Input
+    lpDest: The dest buffer
+    lpSrc: The source string
+*/
+static void MoveString(wchar_t *lpDest, wchar_t *lpSrc);
