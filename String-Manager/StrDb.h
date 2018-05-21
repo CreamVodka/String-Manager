@@ -51,6 +51,11 @@ size_t GetFreeSize();
 size_t GetItemCount();
 
 /*
+    Get storage pointer
+*/
+const wchar_t GetStorage();
+
+/*
  - Description
     Get string by index
  - Input
@@ -197,3 +202,18 @@ bool AlterNextByContent(const wchar_t *lpSrcString, size_t nBeginIndex,
     The altered strings count
 */
 size_t AlterAllByContent(const wchar_t *lpSrcString, const wchar_t *lpNewString);
+
+/*
+ - Description
+    Count the number and frequency of '0'~'9', 'A'~'Z' and 'a'~'z'
+ - Input
+    lpCounts: The array to store counts
+    nSize: The array size, minimum size is 62
+ - Output
+    lpTotal: The total letters count. It can be NULL
+ - Return
+    true if successful, or false
+ - Other
+    The counts are sorted by '0'~'9', 'A'~'Z' and 'a'~'z'
+*/
+bool Statistic(size_t *lpCounts, size_t nSize, size_t *lpTotal);
