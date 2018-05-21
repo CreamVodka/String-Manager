@@ -8,9 +8,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-// For debug
-#define STORAGE_SIZE        50
-// #define STORAGE_SIZE        1000
+#define STORAGE_SIZE        1000
 
 // The number of characters in shortest string is 2, including '\0'
 #define MAX_STRING_COUNT    STORAGE_SIZE / 2

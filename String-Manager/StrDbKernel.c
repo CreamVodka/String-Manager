@@ -12,6 +12,9 @@
 #pragma warning(disable:4996) 
 #pragma warning(disable:4018) 
 
+// Min array size to store '0'~'9', 'a'~'z' and 'A'~'Z' counts
+#define MIN_STAT_SIZE   62
+
 // String storage
 static wchar_t      g_szStorage[STORAGE_SIZE] = { L'\0' };
 static size_t       g_nUsedSize = 0;
@@ -478,6 +481,74 @@ size_t GetFreeSize()
 size_t GetItemCount()
 {
     return g_nCount;
+}
+
+/*
+    Get storage pointer
+*/
+const wchar_t GetStorage()
+{
+    return g_szStorage;
+}
+
+/*
+    Count the number and frequency of '0'~'9', 'a'~'z' and 'A'~'Z'
+*/
+bool Statistic(size_t *lpCounts, size_t nSize, size_t *lpTotal)
+{
+    assert(lpCounts != NULL);
+
+    /*
+        Char: '0' ~ '9'
+        ASCII: 0x30 ~ 0x39
+        Index = ASCII - 0x30
+
+        Char: 'A' ~ 'Z'
+        ASCII: 0x41 ~ 0x5A
+        Index = ASCII - 0x37
+
+        Char: 'a' ~ 'z'
+        ASCII: 0x61 ~ 0x7A
+        Index = ASCII - 0x3D
+    */
+
+    if (nSize >= MIN_STAT_SIZE)
+    {
+        size_t nTotal = 0;
+        for (size_t i = 0; i != g_nCount; ++i)
+        {
+            wchar_t *lpString = g_IdxTab[i].lpData;
+            for (size_t j = 0; j != g_IdxTab[i].nLength - 1; ++j)
+            {
+                ++nTotal;
+
+                wchar_t cha = lpString[j];
+                if (L'0' <= cha && cha <= L'9')
+                {
+                    ++lpCounts[cha - 0x30];
+                }
+                else if (L'A' <= cha && cha <= L'Z')
+                {
+                    ++lpCounts[cha - 0x37];
+                }
+                else if (L'a' <= cha && cha <= L'z')
+                {
+                    ++lpCounts[cha - 0x3D];
+                }
+            }
+        }
+
+        if (lpTotal != NULL)
+        {
+            *lpTotal = nTotal;
+        }
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /*
